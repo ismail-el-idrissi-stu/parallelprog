@@ -1,0 +1,23 @@
+Week 7 - Stencil Optimization Performance
+
+CPU threads used: 4
+
+stencil_opt2 runtime: 339.514145 ms
+stencil_opt4 runtime: 0.048883 ms
+stencil_opt6 runtime: 0.046580 ms
+
+Speedups:
+- Speedup(opt4 vs opt2) = 339.514145 / 0.048883 ≈ 6943x faster
+- Speedup(opt6 vs opt2) = 339.514145 / 0.046580 ≈ 7288x faster
+- Speedup(opt6 vs opt4) = 0.048883 / 0.046580 ≈ 1.049x faster (~5% faster)
+
+Summary:
+stencil_opt2 is the slowest because it uses multiple parallel regions, has many implicit barriers,
+poor memory locality, and significant thread creation overhead.
+
+stencil_opt4 is much faster because it uses a single parallel region with 'omp for nowait',
+removes implicit barriers, reduces thread synchronization, and improves first-touch memory placement.
+
+stencil_opt6 is the fastest because it uses one large parallel region for the entire stencil execution,
+removes almost all synchronization, eliminates OpenMP region entry/exit overhead,
+uses manual thread ID checks instead of 'masked', and has the best cache locality.
